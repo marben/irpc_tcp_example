@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/marben/irpc/pkg/irpc"
+	"github.com/marben/irpc"
 	"irpc_tcp_example"
 	"log"
 	"net"
