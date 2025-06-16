@@ -1,10 +1,12 @@
 package main
 
 import (
-	"github.com/marben/irpc"
 	"irpc_tcp_example"
 	"log"
 	"net"
+	"time"
+
+	"github.com/marben/irpc"
 )
 
 func main() {
@@ -28,10 +30,12 @@ func main() {
 		log.Fatalf("failed to create client: %v", err)
 	}
 
+	start := time.Now()
 	res, err := mathClient.Add(1, 2)
 	if err != nil {
 		log.Fatalf("failed remote call: %v", err)
 	}
+	latency := time.Since(start)
 
-	log.Printf("remote call Add(1, 2) ~=> %d (mind the skew of 8)", res)
+	log.Printf("remote call Add(1, 2) ~=> %d (mind the skew of 8) [latency: %s]", res, latency)
 }
