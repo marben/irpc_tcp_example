@@ -10,10 +10,12 @@ import (
 )
 
 func main() {
-	log.Println("connecting to localhost:8080")
+	serviceAddr := ":8080"
+
+	log.Println("connecting to", serviceAddr)
 
 	// standard net.Dial tcp connection
-	tcpConn, err := net.Dial("tcp", ":8080")
+	tcpConn, err := net.Dial("tcp", serviceAddr)
 	if err != nil {
 		log.Fatalf("failed to connect: %v", err)
 	}
