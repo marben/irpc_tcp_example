@@ -8,66 +8,66 @@ import (
 	"time"
 )
 
-type StringToolIRpcService struct {
-	impl StringTool
+type BackendIRpcService struct {
+	impl Backend
 	id   []byte
 }
 
-func NewStringToolIRpcService(impl StringTool) *StringToolIRpcService {
-	return &StringToolIRpcService{
+func NewBackendIRpcService(impl Backend) *BackendIRpcService {
+	return &BackendIRpcService{
 		impl: impl,
 		id: []byte{
-			0x0b, 0x6d, 0x06, 0x59, 0x5a, 0x15, 0x8c, 0xce,
-			0xdd, 0x4e, 0x68, 0x77, 0xd2, 0x52, 0xc7, 0x69,
-			0xc8, 0xd2, 0xb8, 0xf7, 0x1e, 0x18, 0x58, 0xb8,
-			0xf8, 0x84, 0xad, 0x4c, 0x38, 0x57, 0x9b, 0x59,
+			0xaa, 0x3b, 0xc1, 0xc0, 0xfe, 0x3d, 0x3b, 0xb9,
+			0x37, 0x82, 0xc9, 0x05, 0xcc, 0xad, 0x3c, 0xa2,
+			0xf3, 0xbd, 0x7f, 0xe3, 0xcf, 0xa8, 0x78, 0xef,
+			0x72, 0x9f, 0x6e, 0x52, 0x4f, 0x30, 0x0b, 0x0a,
 		},
 	}
 }
-func (s *StringToolIRpcService) Id() []byte {
+func (s *BackendIRpcService) Id() []byte {
 	return s.id
 }
-func (s *StringToolIRpcService) GetFuncCall(funcId irpcgen.FuncId) (irpcgen.ArgDeserializer, error) {
+func (s *BackendIRpcService) GetFuncCall(funcId irpcgen.FuncId) (irpcgen.ArgDeserializer, error) {
 	switch funcId {
-	case 0: // Reverse
+	case 0: // ReverseString
 		return func(d *irpcgen.Decoder) (irpcgen.FuncExecutor, error) {
 			// DESERIALIZE
-			var args _Irpc_StringToolReverseReq
+			var args _Irpc_BackendReverseStringReq
 			if err := args.Deserialize(d); err != nil {
 				return nil, err
 			}
 			return func(ctx context.Context) irpcgen.Serializable {
 				// EXECUTE
-				var resp _Irpc_StringToolReverseResp
-				resp.Param0, resp.Param1 = s.impl.Reverse(args.Param0_in)
+				var resp _Irpc_BackendReverseStringResp
+				resp.Param0, resp.Param1 = s.impl.ReverseString(args.Param0_in)
 				return resp
 			}, nil
 		}, nil
-	case 1: // Repeat
+	case 1: // RepeatString
 		return func(d *irpcgen.Decoder) (irpcgen.FuncExecutor, error) {
 			// DESERIALIZE
-			var args _Irpc_StringToolRepeatReq
+			var args _Irpc_BackendRepeatStringReq
 			if err := args.Deserialize(d); err != nil {
 				return nil, err
 			}
 			return func(ctx context.Context) irpcgen.Serializable {
 				// EXECUTE
-				var resp _Irpc_StringToolRepeatResp
-				resp.Param0, resp.Param1 = s.impl.Repeat(args.Param0_in, args.Param1_n)
+				var resp _Irpc_BackendRepeatStringResp
+				resp.Param0, resp.Param1 = s.impl.RepeatString(args.Param0_in, args.Param1_n)
 				return resp
 			}, nil
 		}, nil
-	case 2: // TimeToStr
+	case 2: // TimeToString
 		return func(d *irpcgen.Decoder) (irpcgen.FuncExecutor, error) {
 			// DESERIALIZE
-			var args _Irpc_StringToolTimeToStrReq
+			var args _Irpc_BackendTimeToStringReq
 			if err := args.Deserialize(d); err != nil {
 				return nil, err
 			}
 			return func(ctx context.Context) irpcgen.Serializable {
 				// EXECUTE
-				var resp _Irpc_StringToolTimeToStrResp
-				resp.Param0, resp.Param1 = s.impl.TimeToStr(args.Param0_t)
+				var resp _Irpc_BackendTimeToStringResp
+				resp.Param0, resp.Param1 = s.impl.TimeToString(args.Param0_t)
 				return resp
 			}, nil
 		}, nil
@@ -76,81 +76,81 @@ func (s *StringToolIRpcService) GetFuncCall(funcId irpcgen.FuncId) (irpcgen.ArgD
 	}
 }
 
-type StringToolIRpcClient struct {
+type BackendIRpcClient struct {
 	endpoint irpcgen.Endpoint
 	id       []byte
 }
 
-func NewStringToolIRpcClient(endpoint irpcgen.Endpoint) (*StringToolIRpcClient, error) {
+func NewBackendIRpcClient(endpoint irpcgen.Endpoint) (*BackendIRpcClient, error) {
 	id := []byte{
-		0x0b, 0x6d, 0x06, 0x59, 0x5a, 0x15, 0x8c, 0xce,
-		0xdd, 0x4e, 0x68, 0x77, 0xd2, 0x52, 0xc7, 0x69,
-		0xc8, 0xd2, 0xb8, 0xf7, 0x1e, 0x18, 0x58, 0xb8,
-		0xf8, 0x84, 0xad, 0x4c, 0x38, 0x57, 0x9b, 0x59,
+		0xaa, 0x3b, 0xc1, 0xc0, 0xfe, 0x3d, 0x3b, 0xb9,
+		0x37, 0x82, 0xc9, 0x05, 0xcc, 0xad, 0x3c, 0xa2,
+		0xf3, 0xbd, 0x7f, 0xe3, 0xcf, 0xa8, 0x78, 0xef,
+		0x72, 0x9f, 0x6e, 0x52, 0x4f, 0x30, 0x0b, 0x0a,
 	}
 	if err := endpoint.RegisterClient(id); err != nil {
 		return nil, fmt.Errorf("register failed: %w", err)
 	}
-	return &StringToolIRpcClient{endpoint: endpoint, id: id}, nil
+	return &BackendIRpcClient{endpoint: endpoint, id: id}, nil
 }
-func (_c *StringToolIRpcClient) Reverse(in string) (string, error) {
-	var req = _Irpc_StringToolReverseReq{
+func (_c *BackendIRpcClient) ReverseString(in string) (string, error) {
+	var req = _Irpc_BackendReverseStringReq{
 		Param0_in: in,
 	}
-	var resp _Irpc_StringToolReverseResp
+	var resp _Irpc_BackendReverseStringResp
 	if err := _c.endpoint.CallRemoteFunc(context.Background(), _c.id, 0, req, &resp); err != nil {
-		var zero _Irpc_StringToolReverseResp
+		var zero _Irpc_BackendReverseStringResp
 		return zero.Param0, err
 	}
 	return resp.Param0, resp.Param1
 }
-func (_c *StringToolIRpcClient) Repeat(in string, n int) (string, error) {
-	var req = _Irpc_StringToolRepeatReq{
+func (_c *BackendIRpcClient) RepeatString(in string, n int) (string, error) {
+	var req = _Irpc_BackendRepeatStringReq{
 		Param0_in: in,
 		Param1_n:  n,
 	}
-	var resp _Irpc_StringToolRepeatResp
+	var resp _Irpc_BackendRepeatStringResp
 	if err := _c.endpoint.CallRemoteFunc(context.Background(), _c.id, 1, req, &resp); err != nil {
-		var zero _Irpc_StringToolRepeatResp
+		var zero _Irpc_BackendRepeatStringResp
 		return zero.Param0, err
 	}
 	return resp.Param0, resp.Param1
 }
-func (_c *StringToolIRpcClient) TimeToStr(t time.Time) (string, error) {
-	var req = _Irpc_StringToolTimeToStrReq{
+func (_c *BackendIRpcClient) TimeToString(t time.Time) (string, error) {
+	var req = _Irpc_BackendTimeToStringReq{
 		Param0_t: t,
 	}
-	var resp _Irpc_StringToolTimeToStrResp
+	var resp _Irpc_BackendTimeToStringResp
 	if err := _c.endpoint.CallRemoteFunc(context.Background(), _c.id, 2, req, &resp); err != nil {
-		var zero _Irpc_StringToolTimeToStrResp
+		var zero _Irpc_BackendTimeToStringResp
 		return zero.Param0, err
 	}
 	return resp.Param0, resp.Param1
 }
 
-type _Irpc_StringToolReverseReq struct {
+type _Irpc_BackendReverseStringReq struct {
 	Param0_in string
 }
 
-func (s _Irpc_StringToolReverseReq) Serialize(e *irpcgen.Encoder) error {
+func (s _Irpc_BackendReverseStringReq) Serialize(e *irpcgen.Encoder) error {
 	if err := e.String(s.Param0_in); err != nil {
 		return fmt.Errorf("serialize s.Param0_in of type \"string\": %w", err)
 	}
 	return nil
 }
-func (s *_Irpc_StringToolReverseReq) Deserialize(d *irpcgen.Decoder) error {
+func (s *_Irpc_BackendReverseStringReq) Deserialize(d *irpcgen.Decoder) error {
 	if err := d.String(&s.Param0_in); err != nil {
 		return fmt.Errorf("deserialize s.Param0_in of type \"string\": %w", err)
 	}
 	return nil
 }
 
-type _Irpc_StringToolReverseResp struct {
+type _Irpc_BackendReverseStringResp struct {
 	Param0 string
 	Param1 error
 }
 
-func (s _Irpc_StringToolReverseResp) Serialize(e *irpcgen.Encoder) error {
+func (s _Irpc_BackendReverseStringResp) Serialize(e *irpcgen.Encoder) error {
 	if err := e.String(s.Param0); err != nil {
 		return fmt.Errorf("serialize s.Param0 of type \"string\": %w", err)
 	}
@@ -174,7 +174,7 @@ func (s _Irpc_StringToolReverseResp) Serialize(e *irpcgen.Encoder) error {
 	}
 	return nil
 }
-func (s *_Irpc_StringToolReverseResp) Deserialize(d *irpcgen.Decoder) error {
+func (s *_Irpc_BackendReverseStringResp) Deserialize(d *irpcgen.Decoder) error {
 	if err := d.String(&s.Param0); err != nil {
 		return fmt.Errorf("deserialize s.Param0 of type \"string\": %w", err)
 	}
@@ -187,7 +187,7 @@ func (s *_Irpc_StringToolReverseResp) Deserialize(d *irpcgen.Decoder) error {
 		if isNil {
 			s.Param1 = nil
 		} else {
-			var impl _error_StringTool_impl
+			var impl _error_Backend_impl
 			{ // Error()
 				if err := d.String(&impl._Error_0_); err != nil {
 					return fmt.Errorf("deserialize impl._Error_0_ of type \"string\": %w", err)
@@ -199,20 +199,20 @@ func (s *_Irpc_StringToolReverseResp) Deserialize(d *irpcgen.Decoder) error {
 	return nil
 }
 
-type _error_StringTool_impl struct {
+type _error_Backend_impl struct {
 	_Error_0_ string
 }
 
-func (i _error_StringTool_impl) Error() string {
+func (i _error_Backend_impl) Error() string {
 	return i._Error_0_
 }
 
-type _Irpc_StringToolRepeatReq struct {
+type _Irpc_BackendRepeatStringReq struct {
 	Param0_in string
 	Param1_n  int
 }
 
-func (s _Irpc_StringToolRepeatReq) Serialize(e *irpcgen.Encoder) error {
+func (s _Irpc_BackendRepeatStringReq) Serialize(e *irpcgen.Encoder) error {
 	if err := e.String(s.Param0_in); err != nil {
 		return fmt.Errorf("serialize s.Param0_in of type \"string\": %w", err)
 	}
@@ -221,7 +221,7 @@ func (s _Irpc_StringToolRepeatReq) Serialize(e *irpcgen.Encoder) error {
 	}
 	return nil
 }
-func (s *_Irpc_StringToolRepeatReq) Deserialize(d *irpcgen.Decoder) error {
+func (s *_Irpc_BackendRepeatStringReq) Deserialize(d *irpcgen.Decoder) error {
 	if err := d.String(&s.Param0_in); err != nil {
 		return fmt.Errorf("deserialize s.Param0_in of type \"string\": %w", err)
 	}
@@ -231,12 +231,12 @@ func (s *_Irpc_StringToolRepeatReq) Deserialize(d *irpcgen.Decoder) error {
 	return nil
 }
 
-type _Irpc_StringToolRepeatResp struct {
+type _Irpc_BackendRepeatStringResp struct {
 	Param0 string
 	Param1 error
 }
 
-func (s _Irpc_StringToolRepeatResp) Serialize(e *irpcgen.Encoder) error {
+func (s _Irpc_BackendRepeatStringResp) Serialize(e *irpcgen.Encoder) error {
 	if err := e.String(s.Param0); err != nil {
 		return fmt.Errorf("serialize s.Param0 of type \"string\": %w", err)
 	}
@@ -260,7 +260,7 @@ func (s _Irpc_StringToolRepeatResp) Serialize(e *irpcgen.Encoder) error {
 	}
 	return nil
 }
-func (s *_Irpc_StringToolRepeatResp) Deserialize(d *irpcgen.Decoder) error {
+func (s *_Irpc_BackendRepeatStringResp) Deserialize(d *irpcgen.Decoder) error {
 	if err := d.String(&s.Param0); err != nil {
 		return fmt.Errorf("deserialize s.Param0 of type \"string\": %w", err)
 	}
@@ -273,7 +273,7 @@ func (s *_Irpc_StringToolRepeatResp) Deserialize(d *irpcgen.Decoder) error {
 		if isNil {
 			s.Param1 = nil
 		} else {
-			var impl _error_StringTool_impl
+			var impl _error_Backend_impl
 			{ // Error()
 				if err := d.String(&impl._Error_0_); err != nil {
 					return fmt.Errorf("deserialize impl._Error_0_ of type \"string\": %w", err)
@@ -285,29 +285,29 @@ func (s *_Irpc_StringToolRepeatResp) Deserialize(d *irpcgen.Decoder) error {
 	return nil
 }
 
-type _Irpc_StringToolTimeToStrReq struct {
+type _Irpc_BackendTimeToStringReq struct {
 	Param0_t time.Time
 }
 
-func (s _Irpc_StringToolTimeToStrReq) Serialize(e *irpcgen.Encoder) error {
+func (s _Irpc_BackendTimeToStringReq) Serialize(e *irpcgen.Encoder) error {
 	if err := e.BinaryMarshaler(s.Param0_t); err != nil {
 		return fmt.Errorf("serialize s.Param0_t of type \"encoding.BinaryUnmarshaler\": %w", err)
 	}
 	return nil
 }
-func (s *_Irpc_StringToolTimeToStrReq) Deserialize(d *irpcgen.Decoder) error {
+func (s *_Irpc_BackendTimeToStringReq) Deserialize(d *irpcgen.Decoder) error {
 	if err := d.BinaryUnmarshaler(&s.Param0_t); err != nil {
 		return fmt.Errorf("deserialize s.Param0_t of type \"encoding.BinaryUnmarshaler\": %w", err)
 	}
 	return nil
 }
 
-type _Irpc_StringToolTimeToStrResp struct {
+type _Irpc_BackendTimeToStringResp struct {
 	Param0 string
 	Param1 error
 }
 
-func (s _Irpc_StringToolTimeToStrResp) Serialize(e *irpcgen.Encoder) error {
+func (s _Irpc_BackendTimeToStringResp) Serialize(e *irpcgen.Encoder) error {
 	if err := e.String(s.Param0); err != nil {
 		return fmt.Errorf("serialize s.Param0 of type \"string\": %w", err)
 	}
@@ -331,7 +331,7 @@ func (s _Irpc_StringToolTimeToStrResp) Serialize(e *irpcgen.Encoder) error {
 	}
 	return nil
 }
-func (s *_Irpc_StringToolTimeToStrResp) Deserialize(d *irpcgen.Decoder) error {
+func (s *_Irpc_BackendTimeToStringResp) Deserialize(d *irpcgen.Decoder) error {
 	if err := d.String(&s.Param0); err != nil {
 		return fmt.Errorf("deserialize s.Param0 of type \"string\": %w", err)
 	}
@@ -344,7 +344,7 @@ func (s *_Irpc_StringToolTimeToStrResp) Deserialize(d *irpcgen.Decoder) error {
 		if isNil {
 			s.Param1 = nil
 		} else {
-			var impl _error_StringTool_impl
+			var impl _error_Backend_impl
 			{ // Error()
 				if err := d.String(&impl._Error_0_); err != nil {
 					return fmt.Errorf("deserialize impl._Error_0_ of type \"string\": %w", err)
