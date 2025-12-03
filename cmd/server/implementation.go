@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"strings"
 	"time"
@@ -28,7 +29,7 @@ func (st BackendImplementation) RepeatString(s string, count int) (string, error
 }
 
 func (st BackendImplementation) TimeToString(t time.Time) (string, error) {
-	kitchen := t.Format(time.Kitchen) // Kitchen format is defined as "3:04PM"
+	kitchen := fmt.Sprintf("%s +%ds", t.Format(time.Kitchen), t.Second()) // Kitchen format is defined as "3:04PM"
 	log.Printf("backend: formatting %s to %s", t, kitchen)
 	return kitchen, nil
 }
