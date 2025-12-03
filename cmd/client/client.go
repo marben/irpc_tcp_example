@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	serviceAddr := "rpi:8080"
+	serviceAddr := ":8080"
 
 	log.Println("connecting to", serviceAddr)
 
