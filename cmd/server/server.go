@@ -14,7 +14,7 @@ func main() {
 
 	// backendService of type *irpc_tcp_example.BackendIRpcService is generated using the irpc tool
 	// it translates irpc network calls to the 'real work' implementation and back
-	backendService := irpc_tcp_example.NewBackendIRpcService(backendImpl)
+	backendService := irpc_tcp_example.NewBackendIrpcService(backendImpl)
 
 	// irpc.Server is generic irpc server that operates on a socket (io.ReadWriteCloser)
 	// it can register any number of different services and service versions
