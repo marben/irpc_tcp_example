@@ -10,35 +10,39 @@ import (
 )
 
 var _BackendIrpcId = []byte{
-	0x9e, 0x88, 0x89, 0x62, 0xff, 0x6a, 0x5d, 0x41,
-	0x78, 0xcc, 0xf8, 0x1f, 0x16, 0xa5, 0xcf, 0x6a,
-	0x7c, 0x9c, 0x8b, 0x3d, 0x77, 0x0f, 0x85, 0x94,
-	0x3f, 0x03, 0xb8, 0xe3, 0xd3, 0x38, 0x59, 0x30,
+	0x97, 0x60, 0xb5, 0x5a, 0x15, 0xbf, 0x3b, 0x64,
+	0xab, 0x2f, 0xb2, 0x8c, 0x2b, 0x89, 0xa8, 0x81,
+	0x08, 0xaa, 0xe0, 0xcf, 0xd4, 0x3b, 0x4f, 0x71,
+	0x83, 0x8c, 0xf5, 0xf3, 0x77, 0x99, 0xbf, 0x59,
 }
 
+// BackendIrpcService provides [Backend] interface over irpc
 type BackendIrpcService struct {
 	impl Backend
 }
 
+// NewBackendIrpcService returns new [irpcgen.Service] forwarding [Backend] network calls to impl
 func NewBackendIrpcService(impl Backend) *BackendIrpcService {
 	return &BackendIrpcService{
 		impl: impl,
 	}
 }
+
+// Id implements [irpcgen.Service] interface.
 func (s *BackendIrpcService) Id() []byte {
 	return _BackendIrpcId
 }
+
+// GetFuncCall implements [irpcgen.Service] interface
 func (s *BackendIrpcService) GetFuncCall(funcId irpcgen.FuncId) (irpcgen.ArgDeserializer, error) {
 	switch funcId {
 	case 0: // ReverseString
 		return func(d *irpcgen.Decoder) (irpcgen.FuncExecutor, error) {
-			// DESERIALIZE
 			var args _irpc_Backend_ReverseStringReq
 			if err := args.Deserialize(d); err != nil {
 				return nil, err
 			}
 			return func(ctx context.Context) irpcgen.Serializable {
-				// EXECUTE
 				var resp _irpc_Backend_ReverseStringResp
 				resp.p0, resp.p1 = s.impl.ReverseString(args.in)
 				return resp
@@ -46,13 +50,11 @@ func (s *BackendIrpcService) GetFuncCall(funcId irpcgen.FuncId) (irpcgen.ArgDese
 		}, nil
 	case 1: // RepeatString
 		return func(d *irpcgen.Decoder) (irpcgen.FuncExecutor, error) {
-			// DESERIALIZE
 			var args _irpc_Backend_RepeatStringReq
 			if err := args.Deserialize(d); err != nil {
 				return nil, err
 			}
 			return func(ctx context.Context) irpcgen.Serializable {
-				// EXECUTE
 				var resp _irpc_Backend_RepeatStringResp
 				resp.p0, resp.p1 = s.impl.RepeatString(args.in, args.n)
 				return resp
@@ -60,13 +62,11 @@ func (s *BackendIrpcService) GetFuncCall(funcId irpcgen.FuncId) (irpcgen.ArgDese
 		}, nil
 	case 2: // TimeToString
 		return func(d *irpcgen.Decoder) (irpcgen.FuncExecutor, error) {
-			// DESERIALIZE
 			var args _irpc_Backend_TimeToStringReq
 			if err := args.Deserialize(d); err != nil {
 				return nil, err
 			}
 			return func(ctx context.Context) irpcgen.Serializable {
-				// EXECUTE
 				var resp _irpc_Backend_TimeToStringResp
 				resp.p0, resp.p1 = s.impl.TimeToString(args.t)
 				return resp
@@ -77,7 +77,7 @@ func (s *BackendIrpcService) GetFuncCall(funcId irpcgen.FuncId) (irpcgen.ArgDese
 	}
 }
 
-// BackendIrpcClient implements Backend
+// BackendIrpcClient implements [Backend] interface. It by forwards calls over network to [BackendIrpcService] that provides the implementation.
 //
 // Backend interface defines functions, that will be avalable to be called over the network
 // we return error from every function, because network errors can occur even for functions, that cannot error otherwise
@@ -92,6 +92,9 @@ func NewBackendIrpcClient(endpoint irpcgen.Endpoint) (*BackendIrpcClient, error)
 	}
 	return &BackendIrpcClient{endpoint: endpoint}, nil
 }
+
+// ReverseString implements [Backend]
+//
 func (_c *BackendIrpcClient) ReverseString(in string) (string, error) {
 	var req = _irpc_Backend_ReverseStringReq{
 		in: in,
@@ -103,6 +106,8 @@ func (_c *BackendIrpcClient) ReverseString(in string) (string, error) {
 	}
 	return resp.p0, resp.p1
 }
+
+// RepeatString implements [Backend]
 func (_c *BackendIrpcClient) RepeatString(in string, n int) (string, error) {
 	var req = _irpc_Backend_RepeatStringReq{
 		in: in,
@@ -115,6 +120,8 @@ func (_c *BackendIrpcClient) RepeatString(in string, n int) (string, error) {
 	}
 	return resp.p0, resp.p1
 }
+
+// TimeToString implements [Backend]
 func (_c *BackendIrpcClient) TimeToString(t time.Time) (string, error) {
 	var req = _irpc_Backend_TimeToStringReq{
 		t: t,
@@ -178,7 +185,7 @@ func (s *_irpc_Backend_ReverseStringResp) Deserialize(d *irpcgen.Decoder) error 
 	if err := func(dec *irpcgen.Decoder, s *error) error {
 		var isNil bool
 		if err := irpcgen.DecIsNil(dec, &isNil); err != nil {
-			return fmt.Errorf("deserialize isNil: %w:", err)
+			return fmt.Errorf("deserialize isNil: %w", err)
 		}
 		if isNil {
 			return nil
@@ -261,7 +268,7 @@ func (s *_irpc_Backend_RepeatStringResp) Deserialize(d *irpcgen.Decoder) error {
 	if err := func(dec *irpcgen.Decoder, s *error) error {
 		var isNil bool
 		if err := irpcgen.DecIsNil(dec, &isNil); err != nil {
-			return fmt.Errorf("deserialize isNil: %w:", err)
+			return fmt.Errorf("deserialize isNil: %w", err)
 		}
 		if isNil {
 			return nil
@@ -329,7 +336,7 @@ func (s *_irpc_Backend_TimeToStringResp) Deserialize(d *irpcgen.Decoder) error {
 	if err := func(dec *irpcgen.Decoder, s *error) error {
 		var isNil bool
 		if err := irpcgen.DecIsNil(dec, &isNil); err != nil {
-			return fmt.Errorf("deserialize isNil: %w:", err)
+			return fmt.Errorf("deserialize isNil: %w", err)
 		}
 		if isNil {
 			return nil

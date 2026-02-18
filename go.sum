@@ -1,2 +1,4 @@
 github.com/marben/irpc v0.0.0-20251201171026-e8a8fab74e0d h1:6X4lSbC3PK7kEly/yFO7H2Jk7c040yxC0z+psan3EW4=
 github.com/marben/irpc v0.0.0-20251201171026-e8a8fab74e0d/go.mod h1:Yzs1ONlt4xfo6jqOARI2gK4YfxLCOIDL7QyQW9dz3/0=
+github.com/marben/irpc v0.0.0-20260218100630-752978450cbb h1:/UVRa/7CCTP0MDeRDuKt0gSSXkZx2f2eXrR0VeIniiU=
+github.com/marben/irpc v0.0.0-20260218100630-752978450cbb/go.mod h1:JCeFQRq91KKQ7yXiO6d149cmS1WDO+fi1/UPEJbXSXc=
